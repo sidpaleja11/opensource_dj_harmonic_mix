@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harmonizer — Harmonic Mixing Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:        #0A0A0A;
+      --white:        #FAFAFA;
+      --red:          #FF2800;
+      --nardo:        #6E7479;
+      --nardo-light:  #D1D4D6;
+      --surface-dark: #17181A;
+      --stroke-dark:  #2E3033;
+      --groove:       #1F2022;
+
+      --font-display: "Space Grotesk", sans-serif;
+      --font-body:    "Inter", sans-serif;
+      --font-mono:    "JetBrains Mono", monospace;
+
+      --page-margin:  64px;
+      --section-pad:  96px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.625;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── BANDS ── */
+    .band-white { background: var(--white); color: var(--black); }
+    .band-black { background: var(--black); color: var(--white); }
+
+    /* ── SHARED: SECTION EYEBROW ── */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+    .eyebrow-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--nardo);
+      text-transform: lowercase;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid #E8E8E8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--page-margin);
+      height: 88px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: var(--nardo);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--black); }
+
+    .nav-cta {
+      display: inline-block;
+      padding: 9px 20px;
+      background: var(--black);
+      color: var(--white) !important;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 0;
+      transition: opacity 0.15s;
+    }
+    .nav-cta:hover { opacity: 0.82; }
+
+    /* ── HERO ── */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      min-height: 880px;
+      padding: 80px var(--page-margin);
+      gap: 48px;
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: 76px;
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      color: var(--black);
+    }
+
+    .hero-sub {
+      font-size: 19px;
+      line-height: 1.58;
+      color: var(--nardo);
+      max-width: 500px;
+      margin-bottom: 52px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 28px;
+      background: var(--red);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 0;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      padding: 16px 28px;
+      border: 1.5px solid var(--black);
+      color: var(--black);
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 0;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: rgba(10,10,10,0.05); }
+
+    /* ── VINYL RECORD ── */
+    .vinyl-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vinyl {
+      position: relative;
+      width: 560px;
+      height: 560px;
+      border-radius: 50%;
+      background: #090909;
+      flex-shrink: 0;
+    }
+
+    /* groove rings */
+    .vinyl::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: repeating-radial-gradient(
+        circle at 50% 50%,
+        transparent 0px,
+        transparent 13px,
+        var(--groove) 13px,
+        var(--groove) 14px
+      );
+    }
+
+    /* red center label */
+    .vinyl-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 196px;
+      height: 196px;
+      border-radius: 50%;
+      background: var(--red);
+      border: 3px solid var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 3px;
+      z-index: 2;
+      padding: 20px;
+    }
+
+    .vinyl-brand {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--white);
+    }
+
+    .vinyl-side {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: 0.06em;
+      color: rgba(250,250,250,0.65);
+      text-transform: lowercase;
+    }
+
+    .vinyl-triangle {
+      font-size: 10px;
+      color: rgba(250,250,250,0.8);
+      margin: 2px 0;
+    }
+
+    .vinyl-key {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--white);
+    }
+
+    .vinyl-bpm {
+      font-family: var(--font-mono);
+      font-size: 7.5px;
+      letter-spacing: 0.08em;
+      color: rgba(250,250,250,0.75);
+    }
+
+    .vinyl-cat {
+      font-family: var(--font-mono);
+      font-size: 7px;
+      letter-spacing: 0.1em;
+      color: rgba(250,250,250,0.5);
+      margin-top: 2px;
+    }
+
+    /* spindle */
+    .vinyl-spindle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--black);
+      z-index: 3;
+    }
+
+    /* ── CAMELOT SLIDER (black band) ── */
+    .camelot-slider {
+      padding: var(--section-pad) var(--page-margin);
+      border-top: 1px solid var(--stroke-dark);
+    }
+
+    .tracks-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tracks-row::-webkit-scrollbar { display: none; }
+
+    .track-card {
+      flex-shrink: 0;
+      width: 132px;
+      height: 152px;
+      border: 1px solid var(--stroke-dark);
+      background: var(--surface-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 0;
+      transition: border-color 0.15s;
+      cursor: default;
+    }
+    .track-card:hover { border-color: #444; }
+
+    .track-card.playing {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .track-key {
+      font-family: var(--font-mono);
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--white);
+    }
+    .track-card.off-key .track-key { color: var(--nardo); }
+
+    .track-bpm {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--nardo);
+    }
+    .track-card.playing .track-bpm { color: rgba(250,250,250,0.7); }
+
+    .track-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      border-radius: 0;
+    }
+
+    .pill-playing { background: var(--black); color: var(--white); }
+    .pill-match   { background: var(--red);   color: var(--white); }
+    .pill-offkey  { background: var(--stroke-dark); color: var(--nardo); }
+
+    .drag-hint {
+      margin-top: 24px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--stroke-dark);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── DOT MATRIX (white band) ── */
+    .dot-matrix {
+      padding: var(--section-pad) var(--page-margin);
+      border-top: 1px solid #E8E8E8;
+      text-align: center;
+    }
+
+    .dot-matrix .eyebrow {
+      justify-content: center;
+    }
+
+    .dot-grid {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 52px;
+      flex-wrap: wrap;
+    }
+
+    .dot-card {
+      width: 88px;
+      height: 126px;
+      border: 1px solid #E0E0E0;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 0;
+    }
+
+    .dot-card-key {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .dot-card-bpm {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--nardo);
+      letter-spacing: 0.05em;
+    }
+
+    .dot-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #E0E0E0;
+    }
+    /* accent pips for active/match cards */
+    .dot-card:nth-child(3) .dot-pip,
+    .dot-card:nth-child(5) .dot-pip { background: var(--red); }
+
+    .dot-caption {
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--nardo);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* ── HOW IT WORKS (white band) ── */
+    .how-it-works {
+      padding: var(--section-pad) var(--page-margin);
+      border-top: 1px solid #E8E8E8;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    /* tube numeral: digit inside thick rounded red ring */
+    .tube-numeral {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 6px solid var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--red);
+      margin-bottom: 32px;
+    }
+
+    .step-title {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      color: var(--black);
+    }
+
+    .step-desc {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--nardo);
+      max-width: 380px;
+    }
+
+    /* ── FOOTER CTA (black band) ── */
+    .footer-cta {
+      padding: 120px var(--page-margin);
+      border-top: 1px solid var(--stroke-dark);
+      text-align: center;
+    }
+
+    .footer-h2 {
+      font-family: var(--font-display);
+      font-size: 64px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 48px;
+      color: var(--white);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .footer-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 36px;
+      background: var(--red);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 0;
+      text-decoration: none;
+      margin-bottom: 28px;
+      transition: opacity 0.15s;
+    }
+    .footer-btn:hover { opacity: 0.88; }
+
+    .footer-tagline {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--stroke-dark);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      :root { --page-margin: 24px; --section-pad: 64px; }
+
+      nav { padding: 0 24px; }
+      .nav-links li:not(:last-child) { display: none; }
+
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 64px 24px;
+      }
+      .hero-h1 { font-size: 48px; }
+      .vinyl-stage { display: none; }
+
+      .steps { grid-template-columns: 1fr; gap: 48px; }
+      .footer-h2 { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAV (white) ══ -->
+  <nav class="band-white">
+    <a href="#" class="nav-logo">HARMONIZER</a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">how it works</a></li>
+      <li><a href="#the-wheel">the wheel</a></li>
+      <li><a href="#download" class="nav-cta">download</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══ HERO (white) ══ -->
+  <section class="hero band-white">
+    <div class="hero-left">
+      <div class="eyebrow">
+        <div class="eyebrow-dot"></div>
+        <span class="eyebrow-label">harmonic mixing engine</span>
+      </div>
+      <h1 class="hero-h1">Mix in key.<br>Every time.</h1>
+      <p class="hero-sub">
+        Point Harmonizer at your library. It reads the key and tempo of every track,
+        then shows you exactly what mixes next — ranked on the Camelot wheel.
+      </p>
+      <div class="hero-ctas">
+        <a href="#download" class="btn-primary">scan your crate &nbsp;→</a>
+        <a href="#how-it-works" class="btn-ghost">see how it works</a>
+      </div>
+    </div>
+
+    <div class="vinyl-stage">
+      <div class="vinyl">
+        <div class="vinyl-label">
+          <span class="vinyl-brand">HARMONIZER</span>
+          <span class="vinyl-side">side a · harmonic mix</span>
+          <span class="vinyl-triangle">▶</span>
+          <span class="vinyl-key">8A → 9A</span>
+          <span class="vinyl-bpm">124 BPM · PERFECT MATCH</span>
+          <span class="vinyl-cat">HZ—001</span>
+        </div>
+        <div class="vinyl-spindle"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CAMELOT SLIDER (black) ══ -->
+  <section class="camelot-slider band-black" id="the-wheel">
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <span class="eyebrow-label" style="color:var(--nardo-light);">compatible next tracks · swipe the wheel</span>
+    </div>
+    <div class="tracks-row">
+      <div class="track-card off-key">
+        <span class="track-key">6A</span>
+        <span class="track-bpm">82 BPM</span>
+        <span class="track-pill pill-offkey">off-key</span>
+      </div>
+      <div class="track-card">
+        <span class="track-key">7A</span>
+        <span class="track-bpm">123 BPM</span>
+        <span class="track-pill pill-match">match</span>
+      </div>
+      <div class="track-card playing">
+        <span class="track-key">8A</span>
+        <span class="track-bpm">124 BPM</span>
+        <span class="track-pill pill-playing">playing</span>
+      </div>
+      <div class="track-card">
+        <span class="track-key">9A</span>
+        <span class="track-bpm">124 BPM</span>
+        <span class="track-pill pill-match">match</span>
+      </div>
+      <div class="track-card">
+        <span class="track-key">8B</span>
+        <span class="track-bpm">124 BPM</span>
+        <span class="track-pill pill-match">match</span>
+      </div>
+      <div class="track-card off-key">
+        <span class="track-key">5A</span>
+        <span class="track-bpm">126 BPM</span>
+        <span class="track-pill pill-offkey">off-key</span>
+      </div>
+      <div class="track-card off-key">
+        <span class="track-key">10A</span>
+        <span class="track-bpm">125 BPM</span>
+        <span class="track-pill pill-offkey">off-key</span>
+      </div>
+      <div class="track-card off-key">
+        <span class="track-key">11A</span>
+        <span class="track-bpm">120 BPM</span>
+        <span class="track-pill pill-offkey">off-key</span>
+      </div>
+    </div>
+    <div class="drag-hint">→ drag</div>
+  </section>
+
+  <!-- ══ DOT MATRIX (white) ══ -->
+  <section class="dot-matrix band-white">
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <span class="eyebrow-label">pressed from your library</span>
+    </div>
+    <div class="dot-grid">
+      <div class="dot-card"><span class="dot-card-key">4A</span><span class="dot-card-bpm">118 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">6B</span><span class="dot-card-bpm">122 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">8A</span><span class="dot-card-bpm">124 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">9B</span><span class="dot-card-bpm">126 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">11A</span><span class="dot-card-bpm">128 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">2A</span><span class="dot-card-bpm">130 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">3B</span><span class="dot-card-bpm">132 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">7A</span><span class="dot-card-bpm">123 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">10B</span><span class="dot-card-bpm">127 BPM</span><div class="dot-pip"></div></div>
+      <div class="dot-card"><span class="dot-card-key">1A</span><span class="dot-card-bpm">135 BPM</span><div class="dot-pip"></div></div>
+    </div>
+    <p class="dot-caption">
+      every track analyzed, keyed, and ranked — like a record stamped with its own catalog number.
+    </p>
+  </section>
+
+  <!-- ══ HOW IT WORKS (white) ══ -->
+  <section class="how-it-works band-white" id="how-it-works">
+    <div class="eyebrow">
+      <div class="eyebrow-dot"></div>
+      <span class="eyebrow-label">how it works</span>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="tube-numeral">1</div>
+        <h3 class="step-title">scan</h3>
+        <p class="step-desc">
+          Drop in a folder. Harmonizer reads every track — pulling existing key and BPM tags, computing what's missing.
+        </p>
+      </div>
+      <div class="step">
+        <div class="tube-numeral">2</div>
+        <h3 class="step-title">analyze</h3>
+        <p class="step-desc">
+          Each track lands on the Camelot wheel. Tempo, key, and energy stored locally so re-scans are instant.
+        </p>
+      </div>
+      <div class="step">
+        <div class="tube-numeral">3</div>
+        <h3 class="step-title">mix</h3>
+        <p class="step-desc">
+          Pick a track and see its harmonic neighbors — ranked by key compatibility and BPM, ready for the next drop.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER CTA (black) ══ -->
+  <section class="footer-cta band-black" id="download">
+    <h2 class="footer-h2">Stop guessing.<br>Start mixing.</h2>
+    <div>
+      <a href="#" class="footer-btn">download harmonizer &nbsp;→</a>
+    </div>
+    <span class="footer-tagline">free · open source · mac + windows</span>
+  </section>
+
+</body>
+</html>

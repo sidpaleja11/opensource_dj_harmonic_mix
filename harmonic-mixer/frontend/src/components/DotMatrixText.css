@@ -1,0 +1,33 @@
+.dot-matrix-text {
+  display: inline-flex;
+  gap: 14px;
+}
+
+.dot-matrix-letter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dot-matrix-row {
+  display: flex;
+  gap: 6px;
+}
+
+.dot-matrix-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dot-matrix-dot.lit {
+  background: var(--white);
+}
+
+@media (max-width: 960px) {
+  .dot-matrix-text { gap: 7px; }
+  .dot-matrix-letter { gap: 3px; }
+  .dot-matrix-row { gap: 3px; }
+  .dot-matrix-dot { width: 7px; height: 7px; }
+}
