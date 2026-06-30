@@ -1,5 +1,3 @@
-"""Matching engine — pure functions, no I/O or database access."""
-
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
@@ -67,18 +65,17 @@ def find_matches(
             bpm_dist = abs(source.bpm - track.bpm)
             bpm_ok = ratio <= bpm_tolerance
         elif source.bpm or track.bpm:
-            # One side has BPM, other doesn't — can't filter, show anyway
+            # one side has BPM, other doesn't — can't filter, penalize nothing
             bpm_dist = 0.0
             bpm_ok = True
 
         if not (key_ok and bpm_ok):
             continue
 
-        # Score: key compatibility (1.0 = same key, 0.5 = adjacent/relative) + BPM proximity
         if track.camelot_key == source.camelot_key:
             key_score = 1.0
         elif track.camelot_key and track.camelot_key[-1] != source.camelot_key[-1]:
-            # Relative major/minor (same number, different letter) — very harmonic
+            # relative major/minor (same number, different letter) — very harmonic
             key_score = 0.9
         else:
             key_score = 0.7  # adjacent number

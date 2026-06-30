@@ -1,5 +1,3 @@
-"""File scanning and orchestration — ties tagger, analyzer, and database together."""
-
 from __future__ import annotations
 import logging
 import os

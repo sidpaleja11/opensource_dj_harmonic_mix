@@ -1,5 +1,3 @@
-"""Click CLI entry-point."""
-
 from __future__ import annotations
 import logging
 import sys
@@ -153,7 +151,6 @@ def suggest(ctx: click.Context, track: str, bpm_tol: float, limit: int) -> None:
 
     db = _open_db(ctx)
 
-    # Resolve the source track
     source_row = db.find_by_path(track)
     if source_row is None:
         matches = db.fuzzy_find(track)
@@ -240,6 +237,5 @@ def stats(ctx: click.Context) -> None:
 def _camelot_badge(key: str | None) -> str:
     if not key:
         return "—"
-    # A = minor (warm), B = major (cool)
     colour = "yellow" if key.endswith("A") else "blue"
     return f"[{colour}]{key}[/{colour}]"

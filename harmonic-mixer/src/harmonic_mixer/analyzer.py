@@ -1,10 +1,3 @@
-"""
-Audio analysis — pluggable interface behind a Protocol.
-
-The default implementation uses librosa. Swap it out by passing a different
-Analyzer instance to the scanner.
-"""
-
 from __future__ import annotations
 import logging
 from dataclasses import dataclass
@@ -43,7 +36,6 @@ class LibrosaAnalyzer:
 
             y, sr = librosa.load(str(path), sr=self.sr, mono=True, duration=self.duration)
 
-            # BPM
             tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
             bpm = float(np.atleast_1d(tempo)[0])
 
