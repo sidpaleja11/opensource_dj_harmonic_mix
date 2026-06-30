@@ -1,5 +1,3 @@
-"""SQLite persistence layer."""
-
 from __future__ import annotations
 import sqlite3
 from contextlib import contextmanager
@@ -116,6 +114,10 @@ class Database:
     def all_tracks(self) -> list[TrackRow]:
         rows = self.conn.execute("SELECT * FROM tracks ORDER BY artist, title").fetchall()
         return [_row_to_dataclass(r) for r in rows]
+
+    def find_by_id(self, track_id: int) -> TrackRow | None:
+        row = self.conn.execute("SELECT * FROM tracks WHERE id = ?", (track_id,)).fetchone()
+        return _row_to_dataclass(row) if row else None
 
     def find_by_path(self, path: str) -> TrackRow | None:
         row = self.conn.execute("SELECT * FROM tracks WHERE path = ?", (path,)).fetchone()
