@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "harmonic-mixer"
+version = "0.1.0"
+description = "CLI tool for BPM/key analysis and harmonic DJ track suggestions"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "librosa>=0.10",
+    "mutagen>=1.47",
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.scripts]
+harmonic-mixer = "harmonic_mixer.cli:cli"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/harmonic_mixer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
