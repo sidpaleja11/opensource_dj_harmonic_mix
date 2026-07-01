@@ -1,0 +1,207 @@
+.scan-page {
+  min-height: calc(100svh - 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scan-inner {
+  width: 100%;
+  max-width: 560px;
+  padding: 64px var(--page-margin);
+  text-align: center;
+}
+
+/* ── idle ── */
+.scan-headline {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.scan-sub {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--nardo);
+  margin-bottom: 48px;
+}
+
+/* ── drop zone ── */
+.scan-dropzone {
+  border: 1.5px dashed var(--stroke-dark);
+  padding: 40px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: default;
+}
+.scan-dropzone-active {
+  border-color: var(--red);
+  background: rgba(255, 40, 0, 0.05);
+}
+
+.scan-drop-icon {
+  font-size: 28px;
+  color: var(--nardo);
+  line-height: 1;
+  transition: color 0.15s;
+}
+.scan-dropzone-active .scan-drop-icon { color: var(--red); }
+
+.scan-drop-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+
+.scan-drop-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--nardo);
+  letter-spacing: 0.06em;
+}
+
+.scan-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.scan-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--white);
+  background: var(--surface-dark);
+  border: 1px solid var(--stroke-dark);
+  outline: none;
+  transition: border-color 0.15s;
+  border-radius: 0;
+}
+.scan-input:focus { border-color: var(--red); }
+.scan-input::placeholder { color: var(--nardo); }
+
+.scan-submit {
+  width: 100%;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+.scan-submit:disabled { opacity: 0.38; cursor: not-allowed; }
+
+.scan-privacy {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--nardo);
+}
+.scan-privacy-red { color: var(--red); }
+
+/* ── scanning ── */
+.scan-vinyl-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.scan-vinyl-spin {
+  animation: vinyl-rotate 3s linear infinite;
+}
+
+@keyframes vinyl-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.scan-vinyl-count { font-size: 22px !important; }
+
+.scan-current-file {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--nardo);
+  word-break: break-all;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 32px;
+}
+
+/* ── done ── */
+.scan-done-head {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 48px;
+}
+
+.scan-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-bottom: 52px;
+}
+
+.scan-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.scan-stat-n {
+  font-family: var(--font-mono);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+
+.scan-stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--nardo);
+}
+
+.scan-done-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── shared ghost button ── */
+.scan-btn-ghost {
+  background: none;
+  border: 1.5px solid var(--stroke-dark);
+  color: var(--nardo);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  border-radius: 0;
+}
+.scan-btn-ghost:hover { border-color: var(--nardo-light); color: var(--white); }
+
+/* ── error ── */
+.scan-error {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 32px;
+  word-break: break-all;
+  line-height: 1.6;
+}

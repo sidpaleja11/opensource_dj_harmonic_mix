@@ -1,0 +1,12 @@
+{
+  "name": "harmonic-mixer",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n API,UI -c \"red.bold,blue.bold\" \"python -m harmonic_mixer.cli serve --reload\" \"npm run dev --prefix frontend\"",
+    "api": "python -m harmonic_mixer.cli serve --reload",
+    "ui": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

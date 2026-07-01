@@ -234,8 +234,67 @@ def stats(ctx: click.Context) -> None:
         console.print(table)
 
 
+@cli.command()
+@click.option("--host", default="127.0.0.1", show_default=True, help="Bind host.")
+@click.option("--port", default=8000, show_default=True, type=int, help="Bind port.")
+@click.option("--reload", is_flag=True, help="Auto-reload on code changes (dev).")
+@click.option("--dev", is_flag=True, help="Also start the Vite frontend dev server.")
+@click.pass_context
+def serve(ctx: click.Context, host: str, port: int, reload: bool, dev: bool) -> None:
+    """Start the Harmonizer API server (add --dev to also start the frontend)."""
+    import os
+    import subprocess
+
+    try:
+        import uvicorn
+    except ImportError:
+        console.print("[red]uvicorn not installed.[/red] Run: [bold]pip install -e '.[api]'[/bold]")
+        sys.exit(1)
+
+    db_path = str(Path(ctx.obj["db"]).resolve())
+    os.environ["HARMONIC_MIXER_DB"] = db_path
+
+    # cli.py lives at src/harmonic_mixer/cli.py — three parents up is project root.
+    project_root = Path(__file__).resolve().parent.parent.parent
+
+    console.print(f"\n  [bold green]API[/bold green]      http://{host}:{port}/api")
+    console.print(f"  [bold green]Docs[/bold green]     http://{host}:{port}/api/docs")
+    console.print(f"  [bold green]DB[/bold green]       {db_path}")
+
+    frontend_proc: subprocess.Popen | None = None
+    if dev:
+        frontend_dir = project_root / "frontend"
+        if not frontend_dir.exists():
+            console.print("  [yellow]No frontend/ directory found — skipping.[/yellow]")
+        else:
+            npm = "npm.cmd" if sys.platform == "win32" else "npm"
+            frontend_proc = subprocess.Popen(
+                [npm, "run", "dev"],
+                cwd=str(frontend_dir),
+            )
+            console.print(f"  [bold green]Frontend[/bold green] http://localhost:5173")
+
+    console.print()
+
+    try:
+        uvicorn.run(
+            "api.main:app",
+            host=host,
+            port=port,
+            reload=reload,
+            app_dir=str(project_root),
+        )
+    finally:
+        if frontend_proc is not None:
+            frontend_proc.terminate()
+
+
 def _camelot_badge(key: str | None) -> str:
     if not key:
         return "—"
     colour = "yellow" if key.endswith("A") else "blue"
     return f"[{colour}]{key}[/{colour}]"
+
+
+if __name__ == "__main__":
+    cli()

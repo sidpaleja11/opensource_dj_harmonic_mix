@@ -36,6 +36,10 @@ tests/fixtures/*.aiff
 tests/fixtures/*.aif
 tests/fixtures/*.m4a
 
+# Node
+node_modules/
+frontend/node_modules/
+
 # IDE
 .vscode/
 .idea/

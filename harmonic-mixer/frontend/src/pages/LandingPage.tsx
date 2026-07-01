@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { DotMatrixText } from '../components/DotMatrixText'
 import './LandingPage.css'
 
@@ -23,7 +24,8 @@ export function LandingPage() {
         <ul className="lp-nav-links">
           <li><a href="#how-it-works">how it works</a></li>
           <li><a href="#the-wheel">the wheel</a></li>
-          <li><a href="#download" className="lp-nav-cta">download</a></li>
+          <li><Link to="/mix">library</Link></li>
+          <li><Link to="/scan" className="lp-nav-cta">scan →</Link></li>
         </ul>
       </nav>
 
@@ -45,7 +47,7 @@ export function LandingPage() {
             then shows you exactly what mixes next — ranked on the Camelot wheel.
           </p>
           <div className="lp-hero-ctas">
-            <a href="#download" className="btn-primary">scan your crate &nbsp;→</a>
+            <Link to="/scan" className="btn-primary">scan your crate &nbsp;→</Link>
             <a href="#how-it-works" className="btn-ghost">see how it works</a>
           </div>
         </div>
@@ -146,7 +148,7 @@ export function LandingPage() {
       <section className="lp-footer band-black" id="download">
         <h2 className="footer-h2">Stop guessing.<br />Start mixing.</h2>
         <div>
-          <a href="#" className="footer-btn">download harmonizer &nbsp;→</a>
+          <Link to="/scan" className="footer-btn">scan your crate &nbsp;→</Link>
         </div>
         <span className="footer-tagline">free · open source · mac + windows</span>
       </section>

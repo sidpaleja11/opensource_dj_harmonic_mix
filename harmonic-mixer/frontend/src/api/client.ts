@@ -4,8 +4,17 @@ const BASE = '/api'
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText)
-    throw new Error(`${res.status}: ${text}`)
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new Error('API server unreachable — run: python -m harmonic_mixer.cli serve')
+    }
+    const body = await res.text().catch(() => '')
+    let detail: string
+    try {
+      detail = (JSON.parse(body) as { detail?: string }).detail ?? body
+    } catch {
+      detail = body || res.statusText
+    }
+    throw new Error(`${res.status}: ${detail}`)
   }
   return res.json() as Promise<T>
 }
