@@ -47,3 +47,14 @@ class StatsOut(BaseModel):
     bpm_min: float | None
     bpm_max: float | None
     key_distribution: dict[str, int]
+
+
+class PlaylistItemOut(BaseModel):
+    position: int
+    track: TrackOut
+    compatible: bool  # harmonically compatible with the previous track
+
+
+class ExportRequest(BaseModel):
+    track_ids: list[int] = Field(..., min_length=1)
+    name: str | None = Field(None, max_length=200)

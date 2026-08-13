@@ -69,6 +69,14 @@
   letter-spacing: 0.06em;
 }
 
+.scan-drop-path-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--red);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
 .scan-form {
   display: flex;
   flex-direction: column;

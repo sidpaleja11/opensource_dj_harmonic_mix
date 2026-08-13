@@ -1,0 +1,272 @@
+.pl-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--black);
+}
+
+/* nav */
+.pl-nav {
+  background: var(--surface-dark) !important;
+  border-bottom: 1px solid var(--stroke-dark) !important;
+  flex-shrink: 0;
+}
+.pl-nav .lp-logo { color: var(--white); }
+.pl-nav .lp-nav-links a { color: var(--nardo); }
+.pl-nav .lp-nav-links a:hover { color: var(--white); }
+
+/* header */
+.pl-header {
+  padding: 56px var(--page-margin) 40px;
+  border-bottom: 1px solid var(--stroke-dark);
+  flex-shrink: 0;
+}
+
+.pl-header-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 32px;
+}
+
+.pl-folder-row {
+  display: flex;
+  gap: 12px;
+  max-width: 680px;
+}
+
+.pl-folder-input {
+  flex: 1;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--white);
+  background: var(--surface-dark);
+  border: 1px solid var(--stroke-dark);
+  outline: none;
+  transition: border-color 0.15s;
+  border-radius: 0;
+  min-width: 0;
+}
+.pl-folder-input:focus { border-color: var(--red); }
+.pl-folder-input::placeholder { color: var(--nardo); }
+
+.pl-generate-btn {
+  flex-shrink: 0;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 14px 24px;
+  white-space: nowrap;
+}
+.pl-generate-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* content area */
+.pl-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* loading / error / empty states */
+.pl-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px var(--page-margin);
+}
+
+.pl-state-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--nardo);
+  letter-spacing: 0.04em;
+}
+
+.pl-error-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--red);
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* list header */
+.pl-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--stroke-dark);
+  flex-shrink: 0;
+  min-height: 60px;
+}
+
+.pl-list-status {
+  display: flex;
+  align-items: center;
+}
+
+.pl-list-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--nardo);
+}
+
+/* "sorting harmonically" label with pulsing dot */
+.pl-sorting-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--nardo-light);
+}
+
+.pl-sorting-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  animation: pl-dot-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes pl-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.6); }
+}
+
+.pl-download-btn {
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 10px 20px;
+}
+.pl-download-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+/* track list */
+.pl-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stroke-dark) transparent;
+  /* isolation: isolate keeps translateY stacks from bleeding */
+  isolation: isolate;
+}
+
+/* during animation, clip overflow so items sliding up don't peek above the list */
+.pl-list-animating {
+  overflow: hidden;
+}
+
+/* individual track row */
+.pl-row {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 60px;
+  border-bottom: 1px solid var(--stroke-dark);
+  transition: background 0.1s;
+  user-select: none;
+  /* will-change tells the browser to composite each row independently */
+  will-change: transform;
+}
+.pl-row:not(.pl-row-locked) { cursor: grab; }
+.pl-row:not(.pl-row-locked):active { cursor: grabbing; }
+.pl-row:not(.pl-row-locked):hover { background: rgba(255, 255, 255, 0.03); }
+.pl-row-over { background: rgba(255, 255, 255, 0.07) !important; }
+
+/* locked during animation — no drag interactions, slightly muted */
+.pl-row-locked {
+  cursor: default;
+}
+
+.pl-handle {
+  font-size: 14px;
+  color: var(--stroke-dark);
+  width: 24px;
+  flex-shrink: 0;
+  text-align: center;
+  transition: color 0.15s;
+}
+.pl-row:not(.pl-row-locked):hover .pl-handle { color: var(--nardo); }
+
+.pl-position {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--nardo);
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+  margin-right: 16px;
+}
+
+.pl-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 2px;
+  margin-right: 16px;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: center;
+}
+.pl-key-a { background: rgba(78, 205, 196, 0.15); color: #4ecdc4; }
+.pl-key-b { background: rgba(240, 165, 0, 0.15);  color: #f0a500; }
+.pl-key-x { background: var(--stroke-dark);        color: var(--nardo); }
+
+.pl-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  gap: 2px;
+}
+
+.pl-title {
+  font-size: 14px;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-artist {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--nardo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-bpm {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--nardo);
+  width: 48px;
+  flex-shrink: 0;
+  text-align: right;
+  margin-right: 16px;
+}
+
+.pl-compat {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  width: 20px;
+  flex-shrink: 0;
+  text-align: center;
+  font-weight: 700;
+}
+.pl-compat-ok  { color: #4ecdc4; }
+.pl-compat-bad { color: var(--red); opacity: 0.6; }

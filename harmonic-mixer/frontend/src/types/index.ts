@@ -34,6 +34,12 @@ export interface Stats {
   key_distribution: Record<string, number>
 }
 
+export interface PlaylistItem {
+  position: number
+  track: Track
+  compatible: boolean
+}
+
 // SSE event shapes from /api/scan/progress
 export type ScanProgressEvent =
   | { type: 'progress'; file: string }

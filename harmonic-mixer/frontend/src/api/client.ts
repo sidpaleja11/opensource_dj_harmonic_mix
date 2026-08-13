@@ -1,4 +1,4 @@
-import type { Match, ScanRequest, ScanStatus, ScanProgressEvent, Stats, Track } from '../types'
+import type { Match, PlaylistItem, ScanRequest, ScanStatus, ScanProgressEvent, Stats, Track } from '../types'
 
 const BASE = '/api'
 
@@ -10,7 +10,9 @@ async function json<T>(res: Response): Promise<T> {
     const body = await res.text().catch(() => '')
     let detail: string
     try {
-      detail = (JSON.parse(body) as { detail?: string }).detail ?? body
+      const parsed = JSON.parse(body) as { detail?: string | Array<{ msg: string }> }
+      const d = parsed.detail
+      detail = Array.isArray(d) ? d.map((e) => e.msg).join('; ') : (d ?? body)
     } catch {
       detail = body || res.statusText
     }
@@ -83,6 +85,56 @@ export function streamScanProgress(
   }
   if (onError) es.onerror = onError
   return () => es.close()
+}
+
+// ── Browse ───────────────────────────────────────────────────────────────────
+
+export interface BrowseResult {
+  path: string
+  parent: string | null
+  dirs: string[]
+  drives: string[] | null
+}
+
+export async function browseDir(path?: string): Promise<BrowseResult> {
+  const qs = path ? `?path=${encodeURIComponent(path)}` : ''
+  const res = await fetch(`${BASE}/browse/${qs}`)
+  return json<BrowseResult>(res)
+}
+
+export async function pickFolder(): Promise<string | null> {
+  const res = await fetch(`${BASE}/browse/pick`)
+  const data = await json<{ path: string | null }>(res)
+  return data.path
+}
+
+// ── Playlist ──────────────────────────────────────────────────────────────────
+
+export async function suggestPlaylist(folder: string, bpmTol = 0.06): Promise<PlaylistItem[]> {
+  const qs = new URLSearchParams({ folder, bpm_tol: String(bpmTol) })
+  const res = await fetch(`${BASE}/playlist/suggest?${qs}`)
+  return json<PlaylistItem[]>(res)
+}
+
+export async function exportPlaylist(trackIds: number[], name: string): Promise<void> {
+  const res = await fetch(`${BASE}/playlist/export`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ track_ids: trackIds, name }),
+  })
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`Export failed: ${body || res.statusText}`)
+  }
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${name}.m3u8`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────

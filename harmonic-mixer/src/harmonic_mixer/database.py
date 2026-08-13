@@ -46,7 +46,9 @@ class Database:
         self._conn: sqlite3.Connection | None = None
 
     def connect(self) -> None:
-        self._conn = sqlite3.connect(self.db_path)
+        # check_same_thread=False is safe here: each request gets its own
+        # connection via get_db(), so no connection is shared across threads.
+        self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.executescript(SCHEMA)

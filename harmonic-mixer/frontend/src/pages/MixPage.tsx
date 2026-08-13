@@ -14,6 +14,7 @@ export function MixPage() {
         <Link to="/" className="lp-logo">HARMONIZER</Link>
         <ul className="lp-nav-links">
           <li><Link to="/scan">scan</Link></li>
+          <li><Link to="/playlist">set builder</Link></li>
         </ul>
       </nav>
 

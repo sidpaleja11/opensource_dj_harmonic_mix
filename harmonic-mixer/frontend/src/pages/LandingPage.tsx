@@ -41,10 +41,10 @@ export function LandingPage() {
             <div className="eyebrow-dot" />
             <span className="eyebrow-label">harmonic mixing engine</span>
           </div>
-          <h1 className="lp-hero-h1">Mix in key.<br />Every time.</h1>
+          <h1 className="lp-hero-h1">Get your tracks in order.<br />Every time.</h1>
           <p className="lp-hero-sub">
-            Point Harmonizer at your library. It reads the key and tempo of every track,
-            then shows you exactly what mixes next — ranked on the Camelot wheel.
+            Harmonzier scans your latest music downloads. It reads the key and tempo of every track,
+            then shows you exactly what mixes next. Your folder reorganized before you even open your DJ software.
           </p>
           <div className="lp-hero-ctas">
             <Link to="/scan" className="btn-primary">scan your crate &nbsp;→</Link>
@@ -124,7 +124,7 @@ export function LandingPage() {
           {[
             {
               n: '1', title: 'scan',
-              desc: "Drop in a folder. Harmonizer reads every track — pulling existing key and BPM tags, computing what's missing.",
+              desc: "Drop in a folder. Harmonizer reads every track, pulls existing key and BPM tags, computes what's next.",
             },
             {
               n: '2', title: 'analyze',
@@ -132,7 +132,7 @@ export function LandingPage() {
             },
             {
               n: '3', title: 'mix',
-              desc: 'Pick a track and see its harmonic neighbors — ranked by key compatibility and BPM, ready for the next drop.',
+              desc: 'Pick a track and see its harmonic neighbors: ranked by key compatibility and BPM, reordering your playlist for you.',
             },
           ].map((s) => (
             <div key={s.n} className="step">

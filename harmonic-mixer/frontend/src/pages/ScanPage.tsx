@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { startScan, streamScanProgress } from '../api/client'
+import { pickFolder, startScan, streamScanProgress } from '../api/client'
+import { FolderBrowser } from '../components/FolderBrowser'
 import './ScanPage.css'
 
 type Phase = 'idle' | 'scanning' | 'done' | 'error'
@@ -34,10 +35,18 @@ function extractPathFromDrop(e: React.DragEvent): string | null {
   return null
 }
 
+function isFullPath(p: string): boolean {
+  // Windows absolute: C:\ or C:/ — Unix absolute: /
+  return /^[A-Za-z]:[/\\]/.test(p) || p.startsWith('/')
+}
+
 export function ScanPage() {
   const navigate = useNavigate()
   const [folder, setFolder] = useState('')
+  const [dropHint, setDropHint] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
+  const [browsing, setBrowsing] = useState(false)
+  const [picking, setPicking] = useState(false)
   const [phase, setPhase] = useState<Phase>('idle')
   const [currentFile, setCurrentFile] = useState('')
   const [fileCount, setFileCount] = useState(0)
@@ -98,7 +107,26 @@ export function ScanPage() {
     e.preventDefault()
     setDragOver(false)
     const path = extractPathFromDrop(e)
-    if (path) setFolder(path)
+    if (!path) return
+    setFolder(path)
+    // Browsers block the full file:// path for security — we may only get the folder name
+    if (isFullPath(path)) {
+      setDropHint(null)
+    } else {
+      setDropHint(`got "${path}" — browser can't read the full path. Enter it above.`)
+    }
+  }
+
+  async function handleBrowse() {
+    setPicking(true)
+    try {
+      const path = await pickFolder()
+      if (path) { setFolder(path); setDropHint(null) }
+    } catch {
+      setBrowsing(true)
+    } finally {
+      setPicking(false)
+    }
   }
 
   function handleRetry() {
@@ -132,8 +160,8 @@ export function ScanPage() {
               </div>
               <h1 className="scan-headline">point it at<br />your library.</h1>
               <p className="scan-sub">
-                drag a folder in, or paste the path below. harmonizer reads every
-                track, extracts key and BPM, and builds your local mix graph.
+                browse to your music folder or paste a path below. harmonizer
+                reads every track, extracts key and BPM, and builds your local mix graph.
               </p>
 
               <div
@@ -141,15 +169,19 @@ export function ScanPage() {
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
+                onClick={handleBrowse}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && handleBrowse()}
               >
-                <div className="scan-drop-icon">
-                  {dragOver ? '↓' : '⊕'}
-                </div>
+                <div className="scan-drop-icon">{dragOver ? '↓' : '⊕'}</div>
                 <p className="scan-drop-label">
-                  {dragOver ? 'drop folder here' : 'drag folder here'}
+                  {dragOver ? 'drop folder here' : picking ? 'opening…' : 'browse or drag a folder'}
                 </p>
-                <p className="scan-drop-hint">or type a path below</p>
+                <p className="scan-drop-hint">click to open folder picker</p>
               </div>
+
+              {dropHint && <p className="scan-drop-path-hint">{dropHint}</p>}
 
               <div className="scan-form">
                 <input
@@ -157,7 +189,7 @@ export function ScanPage() {
                   type="text"
                   placeholder="/Users/you/Music/DJ Sets"
                   value={folder}
-                  onChange={(e) => setFolder(e.target.value)}
+                  onChange={(e) => { setFolder(e.target.value); setDropHint(null) }}
                   onKeyDown={(e) => e.key === 'Enter' && handleScan()}
                   spellCheck={false}
                   autoCorrect="off"
@@ -218,8 +250,14 @@ export function ScanPage() {
                 </div>
               </div>
               <div className="scan-done-actions">
-                <button className="btn-primary scan-submit" onClick={() => navigate('/mix')}>
-                  view your library &nbsp;→
+                <button
+                  className="btn-primary scan-submit"
+                  onClick={() => navigate(`/playlist?folder=${encodeURIComponent(folder)}`)}
+                >
+                  build set &nbsp;→
+                </button>
+                <button className="scan-btn-ghost" onClick={() => navigate('/mix')}>
+                  view library
                 </button>
                 <button className="scan-btn-ghost" onClick={handleRetry}>
                   scan another folder
@@ -241,6 +279,13 @@ export function ScanPage() {
 
         </div>
       </main>
+
+      {browsing && (
+        <FolderBrowser
+          onSelect={(path) => { setFolder(path); setDropHint(null); setBrowsing(false) }}
+          onClose={() => setBrowsing(false)}
+        />
+      )}
     </>
   )
 }

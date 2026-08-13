@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .deps import Database, Settings, get_db, get_settings
-from .routes import library, scan, suggest
+from .routes import browse, library, playlist, scan, suggest
 from .schemas import StatsOut
 
 app = FastAPI(
@@ -29,7 +29,9 @@ app.add_middleware(
     allow_credentials=False,
 )
 
+app.include_router(browse.router)
 app.include_router(library.router)
+app.include_router(playlist.router)
 app.include_router(scan.router)
 app.include_router(suggest.router)
 
