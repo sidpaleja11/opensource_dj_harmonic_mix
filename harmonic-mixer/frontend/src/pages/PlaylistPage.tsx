@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { exportPlaylist, suggestPlaylist } from '../api/client'
+import { ExternalSuggestions } from '../components/ExternalSuggestions'
 import type { PlaylistItem } from '../types'
 import './PlaylistPage.css'
 
@@ -311,6 +312,9 @@ export function PlaylistPage() {
           </>
         )}
       </div>
+        {phase === 'ready' && items.length > 0 && (
+          <ExternalSuggestions trackIds={items.map(it => it.track.id)} />
+        )}
     </div>
   )
 }

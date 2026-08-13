@@ -1,4 +1,4 @@
-import type { Match, PlaylistItem, ScanRequest, ScanStatus, ScanProgressEvent, Stats, Track } from '../types'
+import type { ExternalSuggestOut, Match, PlaylistItem, ScanRequest, ScanStatus, ScanProgressEvent, Stats, Track } from '../types'
 
 const BASE = '/api'
 
@@ -135,6 +135,17 @@ export async function exportPlaylist(trackIds: number[], name: string): Promise<
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+// ── External suggestions ──────────────────────────────────────────────────────
+
+export async function fetchExternalSuggestions(trackIds: number[]): Promise<ExternalSuggestOut> {
+  const res = await fetch(`${BASE}/external/suggest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ track_ids: trackIds }),
+  })
+  return json<ExternalSuggestOut>(res)
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────

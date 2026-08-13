@@ -34,6 +34,33 @@ export interface Stats {
   key_distribution: Record<string, number>
 }
 
+export interface SoundCloudTrack {
+  sc_id: number
+  title: string
+  artist: string
+  permalink_url: string
+  downloadable: boolean
+  download_url: string | null
+  artwork_url: string | null
+  bpm: number | null
+  genre: string | null
+}
+
+export interface ExternalSuggestion {
+  artist: string
+  title: string
+  target_camelot_key: string
+  target_bpm: number
+  reason: string
+  soundcloud_search_url: string
+  soundcloud_tracks: SoundCloudTrack[]
+}
+
+export interface ExternalSuggestOut {
+  suggestions: ExternalSuggestion[]
+  soundcloud_configured: boolean
+}
+
 export interface PlaylistItem {
   position: number
   track: Track

@@ -49,3 +49,7 @@ frontend/node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets — real keys go in .env (never committed)
+.env
+!.env.example

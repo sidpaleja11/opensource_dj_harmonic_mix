@@ -58,3 +58,34 @@ class PlaylistItemOut(BaseModel):
 class ExportRequest(BaseModel):
     track_ids: list[int] = Field(..., min_length=1)
     name: str | None = Field(None, max_length=200)
+
+
+class SoundCloudTrack(BaseModel):
+    sc_id: int
+    title: str
+    artist: str
+    permalink_url: str
+    downloadable: bool
+    download_url: str | None
+    artwork_url: str | None
+    bpm: float | None
+    genre: str | None
+
+
+class ExternalSuggestion(BaseModel):
+    artist: str
+    title: str
+    target_camelot_key: str
+    target_bpm: int
+    reason: str
+    soundcloud_search_url: str       # always present — fallback web search
+    soundcloud_tracks: list[SoundCloudTrack]  # populated when client_id is set
+
+
+class ExternalSuggestRequest(BaseModel):
+    track_ids: list[int] = Field(..., min_length=1)
+
+
+class ExternalSuggestOut(BaseModel):
+    suggestions: list[ExternalSuggestion]
+    soundcloud_configured: bool
